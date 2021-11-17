@@ -1,0 +1,95 @@
+---
+title: "Final_Project: Cereals"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(ggplot2) 
+cereal <- read_csv("DATA 2401/cereal.csv")
+glimpse(cereal)
+```
+# Types of cereal: Hot vs Cold
+```{r}
+cereal %>% 
+  count(type)
+```
+
+
+
+
+#Which cereal has the highest calories per serving?
+
+```{r }
+cereal %>% 
+  filter(calories >= 100 , cups >= 1) %>% 
+  select(name, calories, cups) 
+
+```
+
+#Which cereal has the lowest calories per serving?
+```{r}
+cereal %>% 
+  select(name, calories) %>% 
+  summarize(min(calories)) 
+cereal %>% 
+  select(name, type, calories) %>% 
+  arrange(calories) 
+```
+
+#Which has the highest protein per serving?
+```{r}
+
+cereal %>% 
+  select(name, type, calories, protein) %>% 
+  arrange(desc(protein)) %>% 
+  head(5)
+
+```
+
+#Do higher sugar cereals have more calories?
+```{r}
+cereal %>% 
+  select(name, calories, sugars) %>% 
+  arrange(desc(sugars)) 
+
+  
+```
+
+#Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
+```{r}
+
+```
+
+#Which has the most fiber? Will high fiber cereals have lower calories per serving?  
+```{r}
+cereal %>% 
+  select(name, type, fiber, calories, ) %>% 
+  arrange(desc(fiber)) %>% 
+  head(10)
+
+```
+
+#Which are low-carb? Are there any keto-friendly cereals? 
+```{r}
+cereal %>% 
+  filter(type == "H") %>% 
+  select(name, type, calories, carbo) %>% 
+  arrange(carbo)
+cereal %>% 
+  filter(type == "C") %>% 
+  select(name, type, calories, carbo) %>% 
+  arrange(carbo)
+```
+
+
