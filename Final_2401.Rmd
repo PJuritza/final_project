@@ -16,7 +16,7 @@ library(readr)
 library(tidyverse)
 library(dplyr)
 library(ggplot2) 
-cereal <- read_csv("DATA 2401/cereal.csv")
+cereal <- read_csv("DATA 2401/cereal.csv", na = "-1")
 glimpse(cereal)
 ```
 # Types of cereal: Hot vs Cold
@@ -26,15 +26,21 @@ cereal %>%
 ```
 
 
+# ounces to grams:
+```{r}
+cereal <- cereal %>% 
+  mutate(weight_ounces = weight, weight_grams = round(weight*28.3495, 0)) %>% 
+  subset(select = -weight)
+cereal
+```
 
 
 #Which cereal has the highest calories per serving?
 
 ```{r }
 cereal %>% 
-  filter(calories >= 100 , cups >= 1) %>% 
+  filter(calories >= 100, cups >= 1) %>% 
   select(name, calories, cups) 
-
 ```
 
 #Which cereal has the lowest calories per serving?
@@ -57,24 +63,27 @@ cereal %>%
 
 ```
 
-#Do higher sugar cereals have more calories?
+#Do higher-sugar cereals have more calories? 
 ```{r}
 cereal %>% 
   select(name, calories, sugars) %>% 
-  arrange(desc(sugars)) 
+  arrange(desc(sugars))
 
   
 ```
 
 #Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
 ```{r}
-
+colnames(cereal)
+cereal %>% 
+  select(name, rating, shelf) %>% 
+  arrange(desc(rating))
 ```
 
 #Which has the most fiber? Will high fiber cereals have lower calories per serving?  
 ```{r}
 cereal %>% 
-  select(name, type, fiber, calories, ) %>% 
+  select(name, fiber, calories) %>% 
   arrange(desc(fiber)) %>% 
   head(10)
 
@@ -90,8 +99,7 @@ cereal %>%
   filter(type == "C") %>% 
   select(name, type, calories, carbo) %>% 
   arrange(carbo)
+  
 ```
-
-
 
 
