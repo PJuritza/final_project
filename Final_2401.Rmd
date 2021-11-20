@@ -23,73 +23,105 @@ glimpse(cereal)
 ```{r}
 cereal %>% 
   count(type)
+
 ```
 
 
 # ounces to grams:
 ```{r}
 cereal <- cereal %>% 
-  mutate(weight_ounces = weight, weight_grams = round(weight*28.3495, 0)) %>% 
+  mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
   subset(select = -weight)
 cereal
 ```
 
-
 #Which cereal has the highest calories per serving?
 
-```{r }
+```{r,  }
 cereal %>% 
-  filter(calories >= 100, cups >= 1) %>% 
-  select(name, calories, cups) 
+  select(name, calories, fat, carbo, sugars, protein) %>% 
+  arrange(desc(calories)) %>%
+  head(5) %>% 
+  ggplot(aes(x = calories, y = name)) + 
+  geom_col() +
+  labs(title = "Top 5 Cereals with Highest Calories per Serving", x = "Calories", y= "Name")
+
+
 ```
 
-#Which cereal has the lowest calories per serving?
+#Which cereals have the lowest calories per serving?
 ```{r}
 cereal %>% 
-  select(name, calories) %>% 
-  summarize(min(calories)) 
-cereal %>% 
   select(name, type, calories) %>% 
-  arrange(calories) 
+  arrange(calories) %>% 
+  head(10) %>% 
+  ggplot(aes(x= calories, y = name)) +
+  geom_col()
 ```
 
 #Which has the highest protein per serving?
 ```{r}
-
 cereal %>% 
-  select(name, type, calories, protein) %>% 
+  select(name, calories, protein) %>% 
   arrange(desc(protein)) %>% 
   head(5)
 
+cereal %>% 
+  select(name, calories, protein) %>% 
+  arrange(desc(protein)) %>% 
+  head(5) %>% 
+  ggplot(aes(x = name, y = protein))+
+  geom_col()
+
 ```
 
-#Do higher-sugar cereals have more calories? 
+#Do cereals with the highest sugar content have more calories? 
 ```{r}
+#cereal %>% 
+ # select(name, sugars, calories) %>% 
+# arrange(desc(sugars))
 cereal %>% 
-  select(name, calories, sugars) %>% 
-  arrange(desc(sugars))
+  arrange(desc(sugars)) %>% 
+  ggplot(aes(x = calories, y = sugars)) +
+  geom_smooth() +
+  geom_point()
 
   
 ```
 
-#Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
+# What factors determine the ratings of the cereals? What affects the ratings? Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
 ```{r}
-colnames(cereal)
+
 cereal %>% 
-  select(name, rating, shelf) %>% 
-  arrange(desc(rating))
+  arrange(desc(rating)) %>% 
+  head(5)
+
+cereal %>% 
+  arrange(rating) %>% 
+  head(5)
+
+
 ```
 
 #Which has the most fiber? Will high fiber cereals have lower calories per serving?  
 ```{r}
+
 cereal %>% 
   select(name, fiber, calories) %>% 
   arrange(desc(fiber)) %>% 
-  head(10)
+  head(5)
+
+cereal %>% 
+  arrange(desc(fiber)) %>% 
+  head(5) %>% 
+  ggplot(aes(x = calories, y = fiber, fill = name)) +
+  geom_col() +
+  theme_classic()
+
 
 ```
 
-#Which are low-carb? Are there any keto-friendly cereals? 
+# Are there any keto-friendly cereals? Which are low-carb? 
 ```{r}
 cereal %>% 
   filter(type == "H") %>% 
@@ -99,7 +131,6 @@ cereal %>%
   filter(type == "C") %>% 
   select(name, type, calories, carbo) %>% 
   arrange(carbo)
-  
 ```
 
 
