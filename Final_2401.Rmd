@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+#install.packages("treemap")
+library(treemap)
 library(readr)
 library(tidyverse)
 library(dplyr)
@@ -77,30 +79,49 @@ cereal %>%
 
 #Do cereals with the highest sugar content have more calories? 
 ```{r}
-#cereal %>% 
- # select(name, sugars, calories) %>% 
-# arrange(desc(sugars))
+cereal %>% 
+  select(name, sugars, calories) %>% 
+  arrange(desc(sugars))
 cereal %>% 
   arrange(desc(sugars)) %>% 
   ggplot(aes(x = calories, y = sugars)) +
-  geom_smooth() +
-  geom_point()
+  geom_point() +
+  geom_smooth()  
 
   
 ```
 
 # What factors determine the ratings of the cereals? What affects the ratings? Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
+
 ```{r}
-
-cereal %>% 
+#treemap(cereal, index = c("rating"), vSize = "sugars")
+topR <-cereal %>% 
   arrange(desc(rating)) %>% 
-  head(5)
+  head(5) 
+ave_top_cal <- mean(topR$calories)
+ave_top_pro <- mean(topR$protein)
+ave_top_fib <- mean(topR$fiber)
+ave_top_sug <- mean(topR$sugars)
+ave_top_sod <- mean(topR$sodium)
+ave_top_pot <- mean(topR$potass)
+ave_top_vit <- mean(topR$vitamins)
 
-cereal %>% 
+
+bottomostR <- cereal %>% 
   arrange(rating) %>% 
-  head(5)
+  head(5) 
+ave_bottom_cal <- mean(bottomostR$calories)
+ave_bottom_pro <- mean(bottomostR$protein)
+ave_bottom_fib <- mean(bottomostR$fiber)
+ave_bottom_sug <- mean(bottomostR$sugars)
+ave_bottom_sod <- mean(bottomostR$sodium)
+ave_bottom_pot <- mean(bottomostR$potass)
+ave_bottom_vit <- mean(bottomostR$vitamins)
 
 
+
+topR
+bottomostR
 ```
 
 #Which has the most fiber? Will high fiber cereals have lower calories per serving?  
@@ -131,6 +152,14 @@ cereal %>%
   filter(type == "C") %>% 
   select(name, type, calories, carbo) %>% 
   arrange(carbo)
+
+cereal %>% 
+  filter(type == "C") %>% 
+  select(name, type, calories, carbo) %>% 
+  arrange(carbo) %>% 
+  head(5) %>% 
+  ggplot(aes(x= calories, y= carbo, fill = name))+
+  geom_label(aes(label = name))
 ```
 
 
