@@ -161,5 +161,11 @@ cereal %>%
   ggplot(aes(x= calories, y= carbo, fill = name))+
   geom_label(aes(label = name))
 ```
+# What are the Calories grouped by shelfs?
+```{r}
+cereal %>% 
+  ggplot(aes(calories, shelf, group = shelf, fill = shelf)) + 
+  geom_violin()
 
+```
 
