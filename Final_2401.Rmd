@@ -27,19 +27,26 @@ cereal %>%
   count(type)
 
 ```
-
-
+- What are the 3 hot cereals
+```{r}
+cereal %>% 
+  select(name, type) %>% 
+  filter(type == "H")
+```
 # ounces to grams:
 ```{r}
 cereal <- cereal %>% 
   mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
   subset(select = -weight)
-cereal
+glimpse(cereal)
 ```
 
-#Which cereal has the highest calories per serving?
+# Which cereal has the highest calories per serving?
+ - highest is the Muesilx Crispy Blend with 160 calories per serving
 
 ```{r,  }
+cereal$name[cereal$calories == max(cereal$calories)]
+
 cereal %>% 
   select(name, calories, fat, carbo, sugars, protein) %>% 
   arrange(desc(calories)) %>%
@@ -51,7 +58,48 @@ cereal %>%
 
 ```
 
-#Which cereals have the lowest calories per serving?
+# Which cereals have the lowest calories per serving?
+  - A three way tie between Puffed Wheat, Puffed Rice, and All- Bran with extra fiber
+```{r}
+cereal$name[cereal$calories == min(cereal$calories)]
+
+cereal %>% 
+  select(name, type, calories) %>% 
+  arrange(calories) %>% 
+  head(5) %>% 
+  ggplot(aes(x= calories, y = name)) +
+  geom_col() +
+  labs(title = "5 Cereals with the worst Calories per Serving", x = "Calories", y= "Name")
+
+```
+
+# Which has the highest protein per serving?
+```{r}
+cereal %>% 
+  select(name, calories, protein) %>% 
+  arrange(desc(protein)) %>% 
+  head(5)
+
+cereal %>% 
+  select(name, calories, protein) %>% 
+  arrange(desc(protein)) %>% 
+  head(5) %>% 
+  ggplot(aes(x = name, y = protein))+
+  geom_col() +
+  labs(title = "5 Cereals with the most amount of protein")
+
+```
+
+
+# ounces to grams:
+```{r}
+cereal <- cereal %>% 
+  mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
+  subset(select = -weight)
+cereal
+```
+
+# Which cereals have the lowest calories per serving?
 ```{r}
 cereal %>% 
   select(name, type, calories) %>% 
@@ -61,7 +109,7 @@ cereal %>%
   geom_col()
 ```
 
-#Which has the highest protein per serving?
+# Which has the highest protein per serving?
 ```{r}
 cereal %>% 
   select(name, calories, protein) %>% 
@@ -77,7 +125,7 @@ cereal %>%
 
 ```
 
-#Do cereals with the highest sugar content have more calories? 
+# Do cereals with the highest sugar content have more calories? 
 ```{r}
 cereal %>% 
   select(name, sugars, calories) %>% 
@@ -168,4 +216,19 @@ cereal %>%
   geom_violin()
 
 ```
-
+# Which self display(1, 2, or 3) have the highest/lowest ratings?
+cereal %>% 
+  filter(shelf == 1) %>% 
+  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
+  geom_col() + 
+  coord_flip()
+cereal %>% 
+  filter(shelf == 2) %>% 
+  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
+  geom_col() + 
+  coord_flip()
+cereal %>% 
+  filter(shelf == 3) %>% 
+  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
+  geom_col() + 
+  coord_flip()
