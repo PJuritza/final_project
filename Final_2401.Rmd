@@ -1,5 +1,5 @@
 ---
-title: "Final_Project: Cereals"
+title: "Final Project: Cereals"
 output: html_document
 ---
 
@@ -13,222 +13,180 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 #install.packages("treemap")
-library(treemap)
-library(readr)
-library(tidyverse)
-library(dplyr)
-library(ggplot2) 
+library(treemap, warn.conflicts = F)
+library(readr, warn.conflicts = F)
+library(tidyverse, warn.conflicts = F)
+library(dplyr, warn.conflicts = F)
+library(ggplot2, warn.conflicts = F) 
 cereal <- read_csv("DATA 2401/cereal.csv", na = "-1")
 glimpse(cereal)
 ```
 # Types of cereal: Hot vs Cold
-```{r}
+```{r message = FALSE, warning = FALSE}
 cereal %>% 
   count(type)
-
-```
-- What are the 3 hot cereals
-```{r}
-cereal %>% 
-  select(name, type) %>% 
-  filter(type == "H")
-```
-# ounces to grams:
-```{r}
-cereal <- cereal %>% 
-  mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
-  subset(select = -weight)
-glimpse(cereal)
-```
-
-# Which cereal has the highest calories per serving?
- - highest is the Muesilx Crispy Blend with 160 calories per serving
-
-```{r,  }
-cereal$name[cereal$calories == max(cereal$calories)]
-
-cereal %>% 
-  select(name, calories, fat, carbo, sugars, protein) %>% 
-  arrange(desc(calories)) %>%
-  head(5) %>% 
-  ggplot(aes(x = calories, y = name)) + 
-  geom_col() +
-  labs(title = "Top 5 Cereals with Highest Calories per Serving", x = "Calories", y= "Name")
-
-
-```
-
-# Which cereals have the lowest calories per serving?
-  - A three way tie between Puffed Wheat, Puffed Rice, and All- Bran with extra fiber
-```{r}
-cereal$name[cereal$calories == min(cereal$calories)]
-
-cereal %>% 
-  select(name, type, calories) %>% 
-  arrange(calories) %>% 
-  head(5) %>% 
-  ggplot(aes(x= calories, y = name)) +
-  geom_col() +
-  labs(title = "5 Cereals with the worst Calories per Serving", x = "Calories", y= "Name")
-
-```
-
-# Which has the highest protein per serving?
-```{r}
-cereal %>% 
-  select(name, calories, protein) %>% 
-  arrange(desc(protein)) %>% 
-  head(5)
-
-cereal %>% 
-  select(name, calories, protein) %>% 
-  arrange(desc(protein)) %>% 
-  head(5) %>% 
-  ggplot(aes(x = name, y = protein))+
-  geom_col() +
-  labs(title = "5 Cereals with the most amount of protein")
-
 ```
 
 
 # ounces to grams:
-```{r}
+```{r message = FALSE, warning = FALSE}
+#Renaming and adjusting the columns 
 cereal <- cereal %>% 
   mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
   subset(select = -weight)
 cereal
-```
-
-# Which cereals have the lowest calories per serving?
-```{r}
-cereal %>% 
-  select(name, type, calories) %>% 
-  arrange(calories) %>% 
-  head(10) %>% 
-  ggplot(aes(x= calories, y = name)) +
-  geom_col()
-```
-
-# Which has the highest protein per serving?
-```{r}
-cereal %>% 
-  select(name, calories, protein) %>% 
-  arrange(desc(protein)) %>% 
-  head(5)
-
-cereal %>% 
-  select(name, calories, protein) %>% 
-  arrange(desc(protein)) %>% 
-  head(5) %>% 
-  ggplot(aes(x = name, y = protein))+
-  geom_col()
 
 ```
 
-# Do cereals with the highest sugar content have more calories? 
-```{r}
-cereal %>% 
-  select(name, sugars, calories) %>% 
-  arrange(desc(sugars))
-cereal %>% 
-  arrange(desc(sugars)) %>% 
-  ggplot(aes(x = calories, y = sugars)) +
-  geom_point() +
-  geom_smooth()  
+#Which cereal has the highest calories per serving? Which cereals have the lowest calories per serving?
 
+```{r message = FALSE, warning = FALSE, fig.dim = c(16, 10)}
+
+cereal %>%
+  ggplot(aes(x = reorder(name, calories), y = calories))+
+  geom_col() +
+  coord_flip()+ 
+  labs(title = "Calories per Serving", x = "Name", y= "Calories")
   
 ```
 
-# What factors determine the ratings of the cereals? What affects the ratings? Does the shelf display affect the ratings?  Which self display(1, 2, or 3) have the highest/lowest ratings? 
 
-```{r}
-#treemap(cereal, index = c("rating"), vSize = "sugars")
-topR <-cereal %>% 
-  arrange(desc(rating)) %>% 
-  head(5) 
-ave_top_cal <- mean(topR$calories)
-ave_top_pro <- mean(topR$protein)
-ave_top_fib <- mean(topR$fiber)
-ave_top_sug <- mean(topR$sugars)
-ave_top_sod <- mean(topR$sodium)
-ave_top_pot <- mean(topR$potass)
-ave_top_vit <- mean(topR$vitamins)
-
-
-bottomostR <- cereal %>% 
-  arrange(rating) %>% 
-  head(5) 
-ave_bottom_cal <- mean(bottomostR$calories)
-ave_bottom_pro <- mean(bottomostR$protein)
-ave_bottom_fib <- mean(bottomostR$fiber)
-ave_bottom_sug <- mean(bottomostR$sugars)
-ave_bottom_sod <- mean(bottomostR$sodium)
-ave_bottom_pot <- mean(bottomostR$potass)
-ave_bottom_vit <- mean(bottomostR$vitamins)
-
-
-
-topR
-bottomostR
-```
-
-#Which has the most fiber? Will high fiber cereals have lower calories per serving?  
-```{r}
-
+#Which has the highest protein per serving?
+```{r message = FALSE, warning = FALSE, fig.dim = c(15, 10)}
 cereal %>% 
-  select(name, fiber, calories) %>% 
-  arrange(desc(fiber)) %>% 
+  select(name, calories, protein) %>% 
+  arrange(desc(protein)) %>% 
   head(5)
 
 cereal %>% 
-  arrange(desc(fiber)) %>% 
-  head(5) %>% 
-  ggplot(aes(x = calories, y = fiber, fill = name)) +
+  arrange(desc(protein)) %>% 
+  ggplot(aes(x = protein, y = name, color = protein, fill = protein ))+
   geom_col() +
-  theme_classic()
+  labs(title = "Protein per Serving", x = "Protein", y= "Name")
 
+```
+
+
+#What is the relationship between sugar and calories? 
+```{r message = FALSE, warning = FALSE}
+cereal %>% 
+  ggplot(aes(x = calories, y = sugars)) +
+  geom_point()+
+  geom_smooth()+ 
+  theme_get()+
+  labs(title = "Sugar vs Calories", x = "Calories", y= "Sugar")
+```
+
+#Which has the most fiber? Will high fiber cereals have lower calories per serving?  
+```{r message = FALSE, warning = FALSE}
+
+cereal %>% 
+  ggplot(aes(x = calories, y = fiber, color= fiber)) +
+  geom_smooth() +
+  geom_point()+ 
+  theme_get()+
+  labs(title = "Fiber vs Calories", x = "Calories", y= "Fiber")
 
 ```
 
 # Are there any keto-friendly cereals? Which are low-carb? 
-```{r}
-cereal %>% 
-  filter(type == "H") %>% 
-  select(name, type, calories, carbo) %>% 
-  arrange(carbo)
-cereal %>% 
-  filter(type == "C") %>% 
-  select(name, type, calories, carbo) %>% 
-  arrange(carbo)
+```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
 cereal %>% 
-  filter(type == "C") %>% 
-  select(name, type, calories, carbo) %>% 
-  arrange(carbo) %>% 
-  head(5) %>% 
-  ggplot(aes(x= calories, y= carbo, fill = name))+
-  geom_label(aes(label = name))
+  ggplot(aes(x = carbo, y = name, color = carbo, fill = carbo))+
+  geom_col() +
+  labs(title = "Carbohydrates per Serving", x = "Carbohydrates", y= "Name")
+
+
 ```
-# What are the Calories grouped by shelfs?
-```{r}
+#What factors determine the ratings of the cereals? What affects the ratings? 
+
+```{r message = FALSE, warning = FALSE, fig.dim = c(10, 10)}
+par(mfrow=c(3,3))
+plot(cereal$calories, cereal$rating,  
+ xlab="Calories",
+ ylab="Rating",
+ main="Rating vs Calories")
+abline(lm(cereal$rating~cereal$calories), col="red")
+
+plot(cereal$fat, cereal$rating, 
+ xlab="Fat",
+ ylab="Rating",
+ main="Rating vs Fat")
+abline(lm(cereal$rating~cereal$fat), col="red")
+
+plot(cereal$sodium, cereal$rating,
+ xlab="Sodium",
+ ylab="Rating",
+ main="Rating vs Sodium")
+abline(lm(cereal$rating~cereal$sodium), col="red")
+
+plot(cereal$carbo, cereal$rating,
+ xlab="Carbohydrates",
+ ylab="Rating",
+ main="Rating vs Carbohydrates")
+abline(lm(cereal$rating~cereal$carbo), col="red")
+
+plot(cereal$fiber, cereal$rating,
+ xlab="Fiber",
+ ylab="Rating",
+ main="Rating vs Fiber")
+abline(lm(cereal$rating~cereal$fiber), col="red")
+
+plot(cereal$sugars, cereal$rating,
+ xlab="Sugar",
+ ylab="Rating",
+ main="Rating vs Sugar")
+abline(lm(cereal$rating~cereal$sugars), col="red")
+
+plot(cereal$protein, cereal$rating,
+ xlab="Protein",
+ ylab="Rating",
+ main="Rating vs Protein")
+abline(lm(cereal$rating~cereal$protein), col="red")
+
+plot(cereal$potass, cereal$rating,
+ xlab="Potassium",
+ ylab="Rating",
+ main="Rating vs Potassium")
+abline(lm(cereal$rating~cereal$potass), col="red")
+
+
+```
+
+
+# What are the calories grouped by shelfs? What is the relation between the shelf display and nutritional information? Which self display(1, 2, or 3) have the highest/lowest ratings? 
+
+```{r message = FALSE, warning = FALSE}
 cereal %>% 
   ggplot(aes(calories, shelf, group = shelf, fill = shelf)) + 
-  geom_violin()
+  geom_violin()         
+  
+cereal %>% 
+  ggplot(aes(sugars, shelf, group = shelf, fill = shelf)) + 
+  geom_violin()    
+
+cereal %>% 
+  ggplot(aes(carbo, shelf, group = shelf, fill = shelf)) + 
+  geom_violin()  
+```
+
+
+```{r message = FALSE, warning = FALSE}
+treemap(cereal, index = c("rating", "name"), vSize = "rating", 
+        fontsize.labels=c(8,12),               
+        fontcolor.labels=c("Black","Navy blue"),    
+        fontface.labels=c(8,9))
+
+
+cereal %>% 
+  ggplot(aes(x= rating, y = calories)) +
+  geom_col(color = "blue") +
+  facet_wrap(~ shelf)
+cereal %>% 
+  ggplot(aes(x= rating, y = sugars)) +
+  geom_col(color = "blue") +
+  facet_wrap(~ shelf)
+
 
 ```
-# Which self display(1, 2, or 3) have the highest/lowest ratings?
-cereal %>% 
-  filter(shelf == 1) %>% 
-  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
-  geom_col() + 
-  coord_flip()
-cereal %>% 
-  filter(shelf == 2) %>% 
-  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
-  geom_col() + 
-  coord_flip()
-cereal %>% 
-  filter(shelf == 3) %>% 
-  ggplot(aes(x = reorder(name, rating), y = rating, fill = rating ))+
-  geom_col() + 
-  coord_flip()
