@@ -1,6 +1,8 @@
 ---
-title: "Final Project: Cereals"
-output: html_document
+title: 'Final Project: Cereals'
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -19,14 +21,14 @@ library(ggplot2, warn.conflicts = F)
 cereal <- read_csv("DATA 2401/cereal.csv", na = "-1")
 glimpse(cereal)
 ```
-# Types of cereal: Hot vs Cold
+**Types of cereal: Hot vs Cold**
 ```{r message = FALSE, warning = FALSE}
 cereal %>% 
   count(type)
 ```
 
 
-# ounces to grams:
+**Ounces to Grams:**
 ```{r message = FALSE, warning = FALSE}
 #Renaming and adjusting the columns 
 cereal <- cereal %>% 
@@ -36,7 +38,7 @@ cereal
 
 ```
 
-#Which cereal has the highest calories per serving? Which cereals have the lowest calories per serving?
+**Which cereal has the highest calories per serving? Which cereals have the lowest calories per serving?**
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(16, 10)}
 
@@ -49,7 +51,7 @@ cereal %>%
 ```
 
 
-#Which has the highest protein per serving?
+**Which has the highest protein per serving?**
 ```{r message = FALSE, warning = FALSE, fig.dim = c(15, 10)}
 cereal %>% 
   select(name, calories, protein) %>% 
@@ -65,7 +67,7 @@ cereal %>%
 ```
 
 
-#What is the relationship between sugar and calories? 
+**What is the relationship between sugar and calories?** 
 ```{r message = FALSE, warning = FALSE}
 cereal %>% 
   ggplot(aes(x = calories, y = sugars)) +
@@ -75,7 +77,7 @@ cereal %>%
   labs(title = "Sugar vs Calories", x = "Calories", y= "Sugar")
 ```
 
-#Will high fiber cereals have lower calories per serving?  
+**Will high fiber cereals have lower calories per serving? ** 
 ```{r message = FALSE, warning = FALSE}
 
 cereal %>% 
@@ -87,7 +89,7 @@ cereal %>%
 
 ```
 
-#Are there any keto-friendly cereals? Which are low-carb? 
+**Are there any keto-friendly cereals? Which are low-carb?** 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
 cereal %>% 
@@ -100,7 +102,7 @@ cereal %>%
   head(5)
 
 ```
-#What affects the ratings? What elements of nutrition result in higher ratings?
+**What affects the ratings? What elements of nutrition result in higher ratings?**
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(10, 10)}
 par(mfrow=c(3,3))
@@ -155,7 +157,7 @@ abline(lm(cereal$rating~cereal$potass), col="red")
 
 
 ```
-#Which self display has the highest/lowest ratings?
+**Which self display has the highest/lowest ratings?**
 
 ```{r, message = FALSE, warning = FALSE}
 boxplot(cereal$rating~cereal$shelf,
@@ -167,7 +169,7 @@ boxplot(cereal$rating~cereal$shelf,
 ```
 
 
-##Based on the nutrition elements and ratings, the lower the sugar and calories the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? 
+**Based on the nutrition elements and ratings, the lower the sugar and calories the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? **
 
 
 ```{r,message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
@@ -185,7 +187,16 @@ boxplot(cereal$calories~cereal$shelf,
  col = rainbow(3))
 
 ```
-#Which manufactures have the higher ratings? Will they also the once produing the low-sugar and low-calorie cereals? 
+**Which manufactures have the higher ratings? Will they also the once produing the low-sugar and low-calorie cereals?**
+
+mfr: Manufacturer of cereal
+A = American Home Food Products;
+G = General Mills
+K = Kelloggs
+N = Nabisco
+P = Post
+Q = Quaker Oats
+R = Ralston Purina
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
@@ -220,14 +231,16 @@ boxplot(cereal$calories~cereal$mfr,
 
 
 
-
-
-
-
-
-
-
 ## Resources 
 
-
+- 80 Cereals Dataset: https://www.kaggle.com/crawford/80-cereals
 - Cheat Sheet Data Visualization with ggplot2 : https://ggplot2.tidyverse.org/
+- How to plot, and how to plot multiple graphs:https://www.youtube.com/watch?v=Z3V4Pbxeahg
+- Protein and its importance: https://www.youtube.com/watch?v=Fe5wHw3pnmY
+- Ketogenic lifestyle: https://www.everydayhealth.com/diet-nutrition/ketogenic-diet/ , https://www.everydayhealth.com/ketogenic-diet/diet/types-targeted-keto-high-protein-keto-keto-cycling-more/
+- More information on Fiber: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/fiber/
+
+
+
+
+
