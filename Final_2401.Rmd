@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 
-
 ```{r}
 library(readr, warn.conflicts = F)
 library(tidyverse, warn.conflicts = F)
@@ -51,7 +50,8 @@ cereal %>%
 ```
 
 
-**Which has the highest protein per serving?**
+**Which cereals have the highest protein per serving?**
+
 ```{r message = FALSE, warning = FALSE, fig.dim = c(15, 10)}
 cereal %>% 
   select(name, calories, protein) %>% 
@@ -77,7 +77,7 @@ cereal %>%
   labs(title = "Sugar vs Calories", x = "Calories", y= "Sugar")
 ```
 
-**Will high fiber cereals have lower calories per serving? ** 
+**Will high-fiber cereals have lower calories per serving? ** 
 ```{r message = FALSE, warning = FALSE}
 
 cereal %>% 
@@ -157,7 +157,7 @@ abline(lm(cereal$rating~cereal$potass), col="red")
 
 
 ```
-**Which self display has the highest/lowest ratings?**
+**Which shelf display has the highest/lowest ratings?**
 
 ```{r, message = FALSE, warning = FALSE}
 boxplot(cereal$rating~cereal$shelf,
@@ -169,7 +169,7 @@ boxplot(cereal$rating~cereal$shelf,
 ```
 
 
-**Based on the nutrition elements and ratings, the lower the sugar and calories the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? **
+**Based on the nutrition elements and ratings, the lower the sugar and calories, the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? **
 
 
 ```{r,message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
@@ -187,16 +187,22 @@ boxplot(cereal$calories~cereal$shelf,
  col = rainbow(3))
 
 ```
-**Which manufactures have the higher ratings? Will they also the once produing the low-sugar and low-calorie cereals?**
 
-mfr: Manufacturer of cereal
-A = American Home Food Products;
-G = General Mills
-K = Kelloggs
-N = Nabisco
-P = Post
-Q = Quaker Oats
-R = Ralston Purina
+**Which manufacturers have the higher ratings? Are the high-rating manufacturers producing low-sugar and low-calorie cereals?** 
+
+```{r message = FALSE, warning = FALSE}
+#mfr: Manufacturer of cereal
+# A: American Home Food Products
+# G: General Mills
+# K: Kelloggs
+# N: Nabisco
+# P: Post
+# Q: Quaker Oats
+# R: Ralston Purina
+
+cereal %>% 
+  count(mfr)
+```
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
