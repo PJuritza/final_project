@@ -12,8 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-#install.packages("treemap")
-library(treemap, warn.conflicts = F)
 library(readr, warn.conflicts = F)
 library(tidyverse, warn.conflicts = F)
 library(dplyr, warn.conflicts = F)
@@ -77,7 +75,7 @@ cereal %>%
   labs(title = "Sugar vs Calories", x = "Calories", y= "Sugar")
 ```
 
-#Which has the most fiber? Will high fiber cereals have lower calories per serving?  
+#Will high fiber cereals have lower calories per serving?  
 ```{r message = FALSE, warning = FALSE}
 
 cereal %>% 
@@ -89,17 +87,20 @@ cereal %>%
 
 ```
 
-# Are there any keto-friendly cereals? Which are low-carb? 
+#Are there any keto-friendly cereals? Which are low-carb? 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
 cereal %>% 
   ggplot(aes(x = carbo, y = name, color = carbo, fill = carbo))+
   geom_col() +
   labs(title = "Carbohydrates per Serving", x = "Carbohydrates", y= "Name")
-
+cereal %>% 
+  select(name, calories, carbo) %>% 
+  arrange(carbo) %>% 
+  head(5)
 
 ```
-#What factors determine the ratings of the cereals? What affects the ratings? 
+#What affects the ratings? What elements of nutrition result in higher ratings?
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(10, 10)}
 par(mfrow=c(3,3))
@@ -152,41 +153,81 @@ plot(cereal$potass, cereal$rating,
 abline(lm(cereal$rating~cereal$potass), col="red")
 
 
+
+```
+#Which self display has the highest/lowest ratings?
+
+```{r, message = FALSE, warning = FALSE}
+boxplot(cereal$rating~cereal$shelf,
+ xlab="Shelf",
+ ylab="Rating",
+ main="Rating vs Shelf",
+ col = rainbow(3))
+
 ```
 
 
-# What are the calories grouped by shelfs? What is the relation between the shelf display and nutritional information? Which self display(1, 2, or 3) have the highest/lowest ratings? 
-
-```{r message = FALSE, warning = FALSE}
-cereal %>% 
-  ggplot(aes(calories, shelf, group = shelf, fill = shelf)) + 
-  geom_violin()         
-  
-cereal %>% 
-  ggplot(aes(sugars, shelf, group = shelf, fill = shelf)) + 
-  geom_violin()    
-
-cereal %>% 
-  ggplot(aes(carbo, shelf, group = shelf, fill = shelf)) + 
-  geom_violin()  
-```
+##Based on the nutrition elements and ratings, the lower the sugar and calories the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? 
 
 
-```{r message = FALSE, warning = FALSE}
-treemap(cereal, index = c("rating", "name"), vSize = "rating", 
-        fontsize.labels=c(8,12),               
-        fontcolor.labels=c("Black","Navy blue"),    
-        fontface.labels=c(8,9))
+```{r,message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
+par(mfrow=c(2,2))
+boxplot(cereal$sugars~cereal$shelf,
+ xlab="Shelf",
+ ylab="Sugars",
+ main="Sugar vs Shelf",
+ col = rainbow(3))
 
-
-cereal %>% 
-  ggplot(aes(x= rating, y = calories)) +
-  geom_col(color = "blue") +
-  facet_wrap(~ shelf)
-cereal %>% 
-  ggplot(aes(x= rating, y = sugars)) +
-  geom_col(color = "blue") +
-  facet_wrap(~ shelf)
-
+boxplot(cereal$calories~cereal$shelf,
+ xlab="Shelf",
+ ylab="Calories",
+ main="Calories vs Shelf",
+ col = rainbow(3))
 
 ```
+#Which manufactures have the higher ratings? Will they also the once produing the low-sugar and low-calorie cereals? 
+
+```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
+
+
+par(mfrow=c(2,3))
+boxplot(cereal$rating~cereal$mfr,
+ xlab="Manufacture",
+ ylab="Rating",
+ main="Rating vs Manufacture",
+ col = rainbow(7))
+
+
+boxplot(cereal$sugars~cereal$mfr,
+ xlab="Manufacture",
+ ylab="Sugar",
+ main="Sugar vs Manufacture",
+ col = rainbow(7))
+
+
+boxplot(cereal$calories~cereal$mfr,
+ xlab="Manufacture",
+ ylab="Calories",
+ main="Calories vs Manufacture",
+ col = rainbow(7))
+
+```
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Resources 
+
+
+- Cheat Sheet Data Visualization with ggplot2 : https://ggplot2.tidyverse.org/
