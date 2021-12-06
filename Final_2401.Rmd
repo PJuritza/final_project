@@ -1,45 +1,106 @@
 ---
-title: 'Final Project: Cereals'
-output:
-  html_document: default
-  pdf_document: default
+title: 'Nutritions Facts of Cereals'
+author: "Juritza Pantoja, Chineze Emodi, Julie Bawi"
+date: "Fall 2021"
+output: slidy_presentation
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+---
 
+## Introduction:
+
+Ever heard of the phrase you are what you eat?
+
+Today, we will be looking at the nutrition facts of different kinds of cereal. When you first hear breakfast, what is the first meal that comes to your mind? Maybe eggs, and bacon, with some toast, pancakes, or waffles, or perhaps some cream cheese on a bagel. Or if you are on a time crunch you may want a quick meal, you'll probably settle for some oatmeal or cereal?
+Yesss!!
+Cereal! A quick, fast and delicious meal for breakfast or as a late-night "snack." There are 100's of cereals out on the market that varies from different types of manufacturers to sugar-free and keto-friendly. So today, we are going to be looking at the nutrition facts of 80 kinds of cereal.
+
+We found a dataset on Kaggle crated updated on October 24, 2017, by Christ Crawford. But stated in his acknowledgments section the dataset was "gathered and cleaned up by Peta Isenberg, Pierre Dragicevic and Yvonne Jansen," so credit must be given to them as well. But the original source was by "Stat. Lib- 1993 expo." Which is then moved to kaggle.
+
+This dataset has many different fields to look at, including the manufacturers, type (Hot or Cold), Calories, Rating, and so much more.
+We have created a few interesting questions to help us understand this dataset. By the end of this presentation, you may change your mind about what best cereal is the best cereal you are going to consume.
+
+Without further ado, let's get started by looking at these data and their nutrition facts. 
+ 
+---
+
+ ## Library
 
 ```{r}
-library(readr, warn.conflicts = F)
-library(tidyverse, warn.conflicts = F)
-library(dplyr, warn.conflicts = F)
-library(ggplot2, warn.conflicts = F) 
-cereal <- read_csv("DATA 2401/cereal.csv", na = "-1")
+library(readr, warn.conflicts = F)         #Used to read the csv file
+library(tidyverse, warn.conflicts = F)     #Used to clean up the dataset
+library(dplyr, warn.conflicts = F)         #Used to manipulate datasets
+library(ggplot2, warn.conflicts = F)       #Used to create plots from data frames
+```
+
+```{r}
+#Read in and rename the csv file
+cereal <- read_csv("C:/Users/chunw/OneDrive/Data2401/cereal.csv", na = "-1")
 glimpse(cereal)
 ```
-**Types of cereal: Hot vs Cold**
-```{r message = FALSE, warning = FALSE}
-cereal %>% 
-  count(type)
-```
 
+ # Clean up:
+ 
+ There were a few things that we noticed needed some tidying up with the dataset.
 
-**Ounces to Grams:**
+ 1. While looking at the data we saw that there were negatives in the data, and knowing it's not
+possible to have negative potassium in anything, we needed to remove it.
+
+ 2. We wanted to get a more precise weight of the cereals, so we converted the ounces to pounds, also we changed the name of `weight` to `weight_ounces.`
+ 
+ 3. The third was a bit odd, we noticed that there are actually 77 kinds of cereal listed in this dataset, but still, we carried along.
+
+ # ounces to grams:
+
 ```{r message = FALSE, warning = FALSE}
 #Renaming and adjusting the columns 
 cereal <- cereal %>% 
   mutate(weight_grams = round(weight*28.3495, digits = 0), weight_ounces = weight, rating = ceiling(rating)) %>% 
   subset(select = -weight)
 cereal
-
 ```
 
-**Which cereal has the highest calories per serving? Which cereals have the lowest calories per serving?**
+
+ # Closer Look:
+ 
+We were curious to know what they meant by hot and cold type cereal. Did they mean What type of cereal is best hot or cold? Let's look at the data
+
+ ### Types of cereal: Hot vs Cold
+
+```{r message = FALSE, warning = FALSE}
+cereal %>% 
+  count(type)
+```
+ 
+Cool! Now we know that there are only 3 types of hot cereal...but now I feel like we need to know what the 3 kinds of cereal are.
+
+ ### What are the 3 hot cereals?
+```{r}
+cereal %>% 
+  select(name, type) %>% 
+  filter(type == "H")
+```
+
+ Interestingly, it seems that the three kinds of cereal are oatmeal.
+
+
+ # Let's talk calories
+ 
+  We wanted to know which cereal has the most calories, because duh, we need to count our calories....jk, you don't. But still, let's find out. 
+ 
+ ### Which cereal has the highest calories per serving? Which cereals have the lowest calories per serving?
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(16, 10)}
+#The max calories
+cereal$name[cereal$calories == max(cereal$calories)]
+
+#The min calories
+cereal$name[cereal$calories == min(cereal$calories)]
 
 cereal %>%
   ggplot(aes(x = reorder(name, calories), y = calories))+
@@ -48,9 +109,16 @@ cereal %>%
   labs(title = "Calories per Serving", x = "Name", y= "Calories")
   
 ```
+ It seems that the highest is the Muesilx Crispy Blend with 160 calories per serving.
+ 
+ The lowest is a three-way tie between Puffed Wheat, Puffed Rice, and All-Bran with extra fiber, with 50 grams per serving
+ 
+ # Now proteins
+
+ Proteins are very beneficial, the more the better. It's probably the one nutrition fact that you'll see a high number and not be too concerned.
 
 
-**Which cereals have the highest protein per serving?**
+ ### Which cereals have the highest protein per serving?
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(15, 10)}
 cereal %>% 
@@ -66,8 +134,16 @@ cereal %>%
 
 ```
 
+The winner for the `Cereal Nutrions` in the protein category is.....drumroll, please.......
+ gasp its a tie, coming in at 6 proteins per serving, congratulations to  *Cheerios, and Special K*
 
-**What is the relationship between sugar and calories?** 
+# Moving on
+
+ OK, OK that was fun... I guess. Let's move on, we want to see the relationship between sugar and calories.
+ 
+ According to, Diabetes Education Online, "A teaspoon of sugar is about 20 calories." So in addition to the set calories, there are additional calories from the sugar.
+
+### What is the relationship between sugar and calories?
 ```{r message = FALSE, warning = FALSE}
 cereal %>% 
   ggplot(aes(x = calories, y = sugars)) +
@@ -77,7 +153,16 @@ cereal %>%
   labs(title = "Sugar vs Calories", x = "Calories", y= "Sugar")
 ```
 
-**Will high-fiber cereals have lower calories per serving? ** 
+So by the looks of it, as the calories increase, so does the sugar intake.
+ It's actually kind of scary, so make sure you are aware when you go to pick your next midnight snack, you may want to think twice before reaching for your favorite cereal.
+ 
+# Fiber Time!!!
+
+ Wait... what is fiber?! If you're like me and don't know what it is, a quick Google search will help clarify.
+ 
+ According to Harvard-The Nutrition Source, "Fiber is a type of carbohydrate that the body can’t digest." Also, Taylor Norris, a writer from Healthline wrote in an article, that the recommended daily fiber intake is 25 for women and 38 for men.
+
+### Will high-fiber cereals have lower calories per serving?
 ```{r message = FALSE, warning = FALSE}
 
 cereal %>% 
@@ -88,8 +173,12 @@ cereal %>%
   labs(title = "Fiber vs Calories", x = "Calories", y= "Fiber")
 
 ```
+# Keto- friendly and low carb
 
-**Are there any keto-friendly cereals? Which are low-carb?** 
+ Let's look at the world's new favorite dietary obsession. Keto!
+ Keto is a diet that consists of high fat and low carb.
+
+### Are there any keto-friendly cereals? Which are low-carb?
 ```{r message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 
 cereal %>% 
@@ -102,7 +191,25 @@ cereal %>%
   head(5)
 
 ```
-**What affects the ratings? What elements of nutrition result in higher ratings?**
+100% Bran has the lowest carbs, therefore, is the most keto-friendly option in this dataset.
+
+# Ratings
+ Let's look at the rating, Crawford, the kaggle creator of the dataset, believes that the ratings were produced by "Customer Reports". We want to see what factors determine the ratings. 
+ We want to see if the ratings affect how it was placed on them selfs. Are the lower-rated cereals placed on the bottom and the best at the top? Or is are they mixed and scattered about?
+
+### Which shelf display has the highest/lowest ratings?
+
+```{r, message = FALSE, warning = FALSE}
+boxplot(cereal$rating~cereal$shelf,
+ xlab="Shelf",
+ ylab="Rating",
+ main="Rating vs Shelf",
+ col = rainbow(3))
+
+```
+Let's take a look at the effects of the ratings.
+
+# What affects the ratings? What elements of nutrition result in higher ratings?
 
 ```{r message = FALSE, warning = FALSE, fig.dim = c(10, 10)}
 par(mfrow=c(3,3))
@@ -157,20 +264,9 @@ abline(lm(cereal$rating~cereal$potass), col="red")
 
 
 ```
-**Which shelf display has the highest/lowest ratings?**
-
-```{r, message = FALSE, warning = FALSE}
-boxplot(cereal$rating~cereal$shelf,
- xlab="Shelf",
- ylab="Rating",
- main="Rating vs Shelf",
- col = rainbow(3))
-
-```
 
 
-**Based on the nutrition elements and ratings, the lower the sugar and calories, the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar? **
-
+# Based on the nutrition elements and ratings, the lower the sugar and calories, the higher the rating. Will shelf 3 have lower calories and lower sugar? Will shelf 2 have higher calories and higher sugar?
 
 ```{r,message = FALSE, warning = FALSE, fig.dim = c(12, 10)}
 par(mfrow=c(2,2))
@@ -188,7 +284,7 @@ boxplot(cereal$calories~cereal$shelf,
 
 ```
 
-**Which manufacturers have the higher ratings? Are the high-rating manufacturers producing low-sugar and low-calorie cereals?** 
+# Which manufacturers have the higher ratings? Are the high-rating manufacturers producing low-sugar and low-calorie cereals?
 
 ```{r message = FALSE, warning = FALSE}
 #mfr: Manufacturer of cereal
@@ -229,24 +325,27 @@ boxplot(cereal$calories~cereal$mfr,
  col = rainbow(7))
 
 ```
+ 
+By the looks of it, it seems that Nabisco has the better/ healthier option out of the participating manufacturers.
 
 ## Summary
-
-
-
+To conclude, looking at the nutrition facts of these, we can conclude that cereal isn't the healthiest option in the market. Hopefully, we have convinced you to be aware the 
+next time you go to pick your cereal of choice you will take a second look at the nutrition facts. Although yummy and easy to prepare, it's not the healthiest to consume as an 
+everyday meal. Whether it be for breakfast or a mid-day snack. If you do decide to gobble down that bowl of cereal at 2 in the morning, maybe not something high in 
+fiber. Every now and then treat yourself to some avocado toast or some acai bowl.
 
 
 
 ## Resources 
 
 - 80 Cereals Dataset: https://www.kaggle.com/crawford/80-cereals
+- Source of the Dataset: http://lib.stat.cmu.edu/datasets/1993.expo/
 - Cheat Sheet Data Visualization with ggplot2 : https://ggplot2.tidyverse.org/
 - How to plot, and how to plot multiple graphs:https://www.youtube.com/watch?v=Z3V4Pbxeahg
 - Protein and its importance: https://www.youtube.com/watch?v=Fe5wHw3pnmY
 - Ketogenic lifestyle: https://www.everydayhealth.com/diet-nutrition/ketogenic-diet/ , https://www.everydayhealth.com/ketogenic-diet/diet/types-targeted-keto-high-protein-keto-keto-cycling-more/
-- More information on Fiber: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/fiber/
-
-
+- More information on Fiber: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/fiber/ , https://www.healthline.com/health/soluble-vs-insoluble-fiber
+- Sugar intake: https://dtc.ucsf.edu/living-with-diabetes/diet-and-nutrition/understanding-carbohydrates/demystifying-sugar/
 
 
 
